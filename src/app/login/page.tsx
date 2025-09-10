@@ -9,11 +9,14 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -86,6 +89,13 @@ export default function LoginPage() {
               </Button>
             </form>
           </CardContent>
+          <Separator className="my-4" />
+          <CardFooter className="flex-col">
+            <p className="text-sm text-muted-foreground mb-2">Or</p>
+            <Button variant="outline" className="w-full" asChild>
+                <Link href="/guest">View as Guest</Link>
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>
