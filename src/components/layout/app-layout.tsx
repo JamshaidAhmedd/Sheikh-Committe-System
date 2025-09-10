@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, Building2, HandCoins } from 'lucide-react';
+import { BarChart, Users, Building2, HandCoins, LogOut } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -14,10 +14,30 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!user && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [user, pathname, router]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  if (!user) {
+    return <>{children}</>;
+  }
 
   return (
     <SidebarProvider>
@@ -72,6 +92,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
+        <SidebarFooter>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
+                        <LogOut />
+                        <span>Logout</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/95 backdrop-blur-sm sm:px-6">
