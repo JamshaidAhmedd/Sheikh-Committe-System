@@ -46,7 +46,6 @@ const generateDailyStatuses = (): DailyStatus[] => {
   const statuses: DailyStatus[] = [];
   const startDate = new Date('2025-09-10');
   const endDate = new Date(); // Today
-  const paymentStatuses: PaymentStatus[] = ['paid', 'unpaid', 'pending'];
 
   if (startDate > endDate) {
       return [];
@@ -58,7 +57,7 @@ const generateDailyStatuses = (): DailyStatus[] => {
   days.forEach(day => {
       statuses.push({
           date: format(day, 'yyyy-MM-dd'),
-          status: paymentStatuses[Math.floor(Math.random() * paymentStatuses.length)]
+          status: 'unpaid'
       });
   });
 
