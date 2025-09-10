@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import type { DailyStatus, PaymentStatus } from '@/lib/types';
+import type { DailyStatus, PaymentStatus, Member } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import {
   DropdownMenu,
@@ -15,8 +15,8 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 interface DailyStatusCalendarProps {
-  dailyStatuses: DailyStatus[];
-  memberName: string;
+  member: Member;
+  onUpdate: (updatedMember: Member) => void;
 }
 
 const statusColors: Record<PaymentStatus, string> = {
@@ -38,25 +38,38 @@ const statusIcons: Record<PaymentStatus, React.ReactNode> = {
 }
 
 export function DailyStatusCalendar({
-  dailyStatuses,
-  memberName,
+  member,
+  onUpdate,
 }: DailyStatusCalendarProps) {
   const { toast } = useToast();
-  const [statuses, setStatuses] = React.useState<Record<string, PaymentStatus>>(
-    dailyStatuses.reduce((acc, s) => {
-      acc[s.date] = s.status;
-      return acc;
-    }, {} as Record<string, PaymentStatus>)
-  );
   
   const [month, setMonth] = React.useState<Date>(new Date('2025-09-10'));
 
+  const statuses = React.useMemo(() => 
+    member.dailyStatuses.reduce((acc, s) => {
+        acc[s.date] = s.status;
+        return acc;
+    }, {} as Record<string, PaymentStatus>),
+  [member.dailyStatuses]);
+
   const handleStatusChange = (date: Date, newStatus: PaymentStatus) => {
     const dateString = format(date, 'yyyy-MM-dd');
-    setStatuses((prev) => ({ ...prev, [dateString]: newStatus }));
+    
+    const updatedDailyStatuses = member.dailyStatuses.map(ds => 
+        ds.date === dateString ? { ...ds, status: newStatus } : ds
+    );
+    
+    // If date not in statuses, add it
+    if (!member.dailyStatuses.find(ds => ds.date === dateString)) {
+        updatedDailyStatuses.push({ date: dateString, status: newStatus });
+    }
+
+    const updatedMember = { ...member, dailyStatuses: updatedDailyStatuses };
+    onUpdate(updatedMember);
+
     toast({
       title: 'Status Updated',
-      description: `${memberName}'s status for ${format(date, 'do MMMM, yyyy')} set to ${newStatus}.`,
+      description: `${member.name}'s status for ${format(date, 'do MMMM, yyyy')} set to ${newStatus}.`,
     });
   };
 

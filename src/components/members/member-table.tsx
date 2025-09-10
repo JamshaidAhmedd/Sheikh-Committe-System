@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { members as allMembers } from '@/lib/data';
+import { members as allMembers, setMembers } from '@/lib/data';
 import type { Member, PaymentStatus } from '@/lib/types';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -32,17 +32,15 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { DailyStatusCalendar } from './daily-status-calendar';
 
-function PaymentHistoryGrid({ member }: { member: Member }) {
+function PaymentHistoryGrid({ member, onUpdate }: { member: Member, onUpdate: (updatedMember: Member) => void }) {
   const { toast } = useToast();
-  const [history, setHistory] = React.useState(member.paymentHistory);
 
   const handleStatusChange = (month: string, newStatus: PaymentStatus) => {
-    const updatedHistory = history.map((p) =>
+    const updatedHistory = member.paymentHistory.map((p) =>
       p.month === month ? { ...p, status: newStatus } : p
     );
-    setHistory(updatedHistory);
-    // Here you would typically make an API call to save the change
-    // For this demo, we'll just show a toast
+    const updatedMember = { ...member, paymentHistory: updatedHistory };
+    onUpdate(updatedMember);
     toast({
       title: 'Payment Status Updated',
       description: `${member.name}'s status for ${format(new Date(month), 'MMMM yyyy')} is now ${newStatus}.`,
@@ -51,7 +49,7 @@ function PaymentHistoryGrid({ member }: { member: Member }) {
 
   return (
     <div className="grid grid-cols-5 gap-2">
-      {history.map((payment) => (
+      {member.paymentHistory.map((payment) => (
         <div key={payment.month} className="text-center">
           <div className="text-xs text-muted-foreground">
             {format(new Date(payment.month), 'MMM yy')}
@@ -119,8 +117,19 @@ function PaymentStatusBadge({ status, isButton=false }: { status: PaymentStatus,
 
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [members, setMembers] = React.useState<Member[]>(allMembers);
+  const [members, setMembersState] = React.useState<Member[]>(allMembers);
   const [selectedMember, setSelectedMember] = React.useState<Member | null>(null);
+
+  React.useEffect(() => {
+    setMembersState(allMembers);
+  }, []);
+
+  const handleMemberUpdate = (updatedMember: Member) => {
+    const newMembers = members.map(m => m.id === updatedMember.id ? updatedMember : m);
+    setMembersState(newMembers);
+    setMembers(newMembers); // This updates the global data store
+    setSelectedMember(updatedMember);
+  };
 
   const filteredMembers = members.filter(
     (member) =>
@@ -188,7 +197,7 @@ export function MemberTable() {
               filteredMembers.map((member) => {
                 const currentPayment = member.paymentHistory.find(p => p.month === currentMonth);
                 return (
-                  <TableRow key={member.id} onClick={() => setSelectedMember(member)} className="cursor-pointer">
+                  <TableRow key={member.id} onClick={() => setSelectedMember(members.find(m => m.id === member.id) || null)} className="cursor-pointer">
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell className="hidden md:table-cell">{member.email}</TableCell>
                     <TableCell className="hidden lg:table-cell">{member.joinDate}</TableCell>
@@ -222,11 +231,14 @@ export function MemberTable() {
             </DialogHeader>
             <div className="py-4">
                 <h3 className="text-lg font-semibold mb-4 font-headline">Daily Payment Status</h3>
-                <DailyStatusCalendar memberName={selectedMember.name} dailyStatuses={selectedMember.dailyStatuses} />
+                <DailyStatusCalendar 
+                  member={selectedMember} 
+                  onUpdate={handleMemberUpdate}
+                />
             </div>
             <div className="py-4">
                 <h3 className="text-lg font-semibold mb-4 font-headline">Monthly Payment History</h3>
-                <PaymentHistoryGrid member={selectedMember} />
+                <PaymentHistoryGrid member={selectedMember} onUpdate={handleMemberUpdate} />
             </div>
           </DialogContent>
         </Dialog>
