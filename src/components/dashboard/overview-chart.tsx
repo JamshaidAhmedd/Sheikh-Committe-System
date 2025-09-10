@@ -25,15 +25,16 @@ interface OverviewChartProps {
 export function OverviewChart({ data }: OverviewChartProps) {
   const chartData = Array.from({ length: 6 }).map((_, i) => {
     const d = subMonths(new Date(), 5-i);
-    const month = format(d, 'yyyy-MM');
+    const monthFormat = 'yyyy-MM';
+    const month = format(d, monthFormat);
     const monthLabel = format(d, 'MMM');
 
     const paid = data.filter(member => 
-        member.paymentHistory.find(p => p.month === month && p.status === 'paid')
+        member.dailyStatuses.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
     ).length;
 
     const unpaid = data.filter(member => 
-        member.paymentHistory.find(p => p.month === month && p.status === 'unpaid')
+        !member.dailyStatuses.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
     ).length;
     
     return { month: monthLabel, paid, unpaid };
