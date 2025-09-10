@@ -6,7 +6,7 @@ export default function GuestPage() {
     <div className="flex min-h-screen flex-col bg-background p-4">
       <div className="flex items-center gap-2 p-2 justify-center my-4">
         <Image
-          src="/IMG_2065.PNG"
+          src="/IMG_2065.PNG?v=1"
           alt="Sheikh Committee Logo"
           width={40}
           height={40}

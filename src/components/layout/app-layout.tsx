@@ -30,7 +30,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
             <Image
-              src="/IMG_2065.PNG"
+              src="/IMG_2065.PNG?v=1"
               alt="Sheikh Committee Logo"
               width={32}
               height={32}
