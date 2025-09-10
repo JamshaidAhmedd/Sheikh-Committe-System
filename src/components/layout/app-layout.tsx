@@ -45,7 +45,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <Image src="/logo.png" alt="Sheikh Committee Logo" width={32} height={32} className="rounded-full" />
+            <Image src="/IMG_2065.PNG" alt="Sheikh Committee Logo" width={32} height={32} className="rounded-full" />
             <h1 className="text-xl font-headline font-bold">
               <span className="group-data-[collapsible=icon]:hidden">
                 Sheikh Committee
