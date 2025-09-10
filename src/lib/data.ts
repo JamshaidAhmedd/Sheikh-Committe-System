@@ -1,5 +1,5 @@
-import { subMonths, format, startOfMonth } from 'date-fns';
-import type { Member, Payment, PaymentStatus } from './types';
+import { subMonths, format, startOfMonth, eachDayOfInterval } from 'date-fns';
+import type { Member, Payment, PaymentStatus, DailyStatus } from './types';
 
 const generatePaymentHistory = (joinDate: Date): Payment[] => {
   const history: Payment[] = [];
@@ -39,12 +39,31 @@ const generatePaymentHistory = (joinDate: Date): Payment[] => {
       });
   }
 
-  // The request is for 15 months, but we should show from join date.
-  // The logic above creates the history. If we need to pad to 15, we could.
-  // The current implementation is more realistic.
-
   return history;
 };
+
+const generateDailyStatuses = (): DailyStatus[] => {
+  const statuses: DailyStatus[] = [];
+  const startDate = new Date('2025-09-10');
+  const endDate = new Date(); // Today
+  const paymentStatuses: PaymentStatus[] = ['paid', 'unpaid', 'pending'];
+
+  if (startDate > endDate) {
+      return [];
+  }
+
+  const interval = { start: startDate, end: endDate };
+  const days = eachDayOfInterval(interval);
+
+  days.forEach(day => {
+      statuses.push({
+          date: format(day, 'yyyy-MM-dd'),
+          status: paymentStatuses[Math.floor(Math.random() * paymentStatuses.length)]
+      });
+  });
+
+  return statuses;
+}
 
 const names = [
   'Mughees',
@@ -87,5 +106,6 @@ export const members: Member[] = names.map((name, index) => {
     email: `${name.toLowerCase().replace(/ /g, '.').replace(/[^a-z.]/g, '')}${index}@example.com`,
     joinDate: format(joinDate, 'yyyy-MM-dd'),
     paymentHistory: generatePaymentHistory(joinDate),
+    dailyStatuses: generateDailyStatuses(),
   };
 });

@@ -5,10 +5,16 @@ export type Payment = {
   status: PaymentStatus;
 };
 
+export type DailyStatus = {
+  date: string; // "YYYY-MM-DD"
+  status: PaymentStatus;
+};
+
 export type Member = {
   id: string;
   name: string;
   email: string;
   joinDate: string; // "YYYY-MM-DD"
   paymentHistory: Payment[];
+  dailyStatuses: DailyStatus[];
 };

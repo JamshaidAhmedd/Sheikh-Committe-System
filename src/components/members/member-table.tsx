@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { DailyStatusCalendar } from './daily-status-calendar';
 
 function PaymentHistoryGrid({ member }: { member: Member }) {
   const { toast } = useToast();
@@ -214,13 +215,17 @@ export function MemberTable() {
 
       {selectedMember && (
         <Dialog open={!!selectedMember} onOpenChange={(open) => !open && setSelectedMember(null)}>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle className="font-headline text-2xl">{selectedMember.name}</DialogTitle>
               <DialogDescription>{selectedMember.email} - Joined on {selectedMember.joinDate}</DialogDescription>
             </DialogHeader>
             <div className="py-4">
-                <h3 className="text-lg font-semibold mb-4 font-headline">Payment History</h3>
+                <h3 className="text-lg font-semibold mb-4 font-headline">Daily Payment Status</h3>
+                <DailyStatusCalendar memberName={selectedMember.name} dailyStatuses={selectedMember.dailyStatuses} />
+            </div>
+            <div className="py-4">
+                <h3 className="text-lg font-semibold mb-4 font-headline">Monthly Payment History</h3>
                 <PaymentHistoryGrid member={selectedMember} />
             </div>
           </DialogContent>
