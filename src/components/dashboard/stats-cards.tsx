@@ -1,30 +1,20 @@
 'use client';
 import { members } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, CreditCard, UserCheck, UserX } from 'lucide-react';
+import { Users, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function StatsCards() {
   const totalMembers = members.length;
-  const currentMonth = format(new Date(), 'yyyy-MM');
+  const today = format(new Date(), 'yyyy-MM-dd');
 
-  const paidThisMonth = members.filter((member) =>
-    member.paymentHistory.some(
-      (p) => p.month === currentMonth && p.status === 'paid'
+  const paidToday = members.filter((member) =>
+    member.dailyStatuses.some(
+      (p) => p.date === today && p.status === 'paid'
     )
   ).length;
 
-  const unpaidThisMonth = members.filter((member) =>
-    member.paymentHistory.some(
-      (p) => p.month === currentMonth && p.status === 'unpaid'
-    )
-  ).length;
-  
-  const pendingThisMonth = members.filter((member) =>
-    member.paymentHistory.some(
-      (p) => p.month === currentMonth && p.status === 'pending'
-    )
-  ).length;
+  const unpaidToday = totalMembers - paidToday;
 
 
   const stats = [
@@ -34,19 +24,14 @@ export function StatsCards() {
       icon: Users,
     },
     {
-      title: 'Paid This Month',
-      value: paidThisMonth,
+      title: 'Paid Today',
+      value: paidToday,
       icon: UserCheck,
     },
     {
-      title: 'Unpaid This Month',
-      value: unpaidThisMonth,
+      title: 'Unpaid Today',
+      value: unpaidToday,
       icon: UserX,
-    },
-    {
-      title: 'Pending',
-      value: pendingThisMonth,
-      icon: CreditCard,
     },
   ];
 

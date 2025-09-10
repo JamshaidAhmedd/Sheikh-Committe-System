@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { members as allMembers, setMembers } from '@/lib/data';
-import type { Member, PaymentStatus } from '@/lib/types';
+import type { Member } from '@/lib/types';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Download, Search, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Download, Search } from 'lucide-react';
 import {
   Table,
   TableHeader,
@@ -15,7 +15,6 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -23,97 +22,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
 import { DailyStatusCalendar } from './daily-status-calendar';
-
-function PaymentHistoryGrid({ member, onUpdate }: { member: Member, onUpdate: (updatedMember: Member) => void }) {
-  const { toast } = useToast();
-
-  const handleStatusChange = (month: string, newStatus: PaymentStatus) => {
-    const updatedHistory = member.paymentHistory.map((p) =>
-      p.month === month ? { ...p, status: newStatus } : p
-    );
-    const updatedMember = { ...member, paymentHistory: updatedHistory };
-    onUpdate(updatedMember);
-    toast({
-      title: 'Payment Status Updated',
-      description: `${member.name}'s status for ${format(new Date(month), 'MMMM yyyy')} is now ${newStatus}.`,
-    });
-  };
-
-  return (
-    <div className="grid grid-cols-5 gap-2">
-      {member.paymentHistory.map((payment) => (
-        <div key={payment.month} className="text-center">
-          <div className="text-xs text-muted-foreground">
-            {format(new Date(payment.month), 'MMM yy')}
-          </div>
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-full">
-                <PaymentStatusBadge status={payment.status} isButton={true} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'paid')}>
-                <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                Paid
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'unpaid')}>
-                <XCircle className="mr-2 h-4 w-4 text-red-500" />
-                Unpaid
-              </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'pending')}>
-                <Clock className="mr-2 h-4 w-4 text-yellow-500" />
-                Pending
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-
-function PaymentStatusBadge({ status, isButton=false }: { status: PaymentStatus, isButton?: boolean }) {
-  const statusConfig = {
-    paid: {
-      icon: <CheckCircle className="h-4 w-4 text-green-600" />,
-      label: 'Paid',
-      className: 'bg-green-100 text-green-800 border-green-200',
-      hoverClass: 'hover:bg-green-200'
-    },
-    unpaid: {
-      icon: <XCircle className="h-4 w-4 text-red-600" />,
-      label: 'Unpaid',
-      className: 'bg-red-100 text-red-800 border-red-200',
-      hoverClass: 'hover:bg-red-200'
-    },
-    pending: {
-      icon: <Clock className="h-4 w-4 text-yellow-600" />,
-      label: 'Pending',
-      className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      hoverClass: 'hover:bg-yellow-200'
-    },
-  };
-
-  const config = statusConfig[status];
-  const buttonClasses = isButton ? `w-full transition-colors ${config.hoverClass}` : '';
-
-  return (
-    <Badge variant="outline" className={`flex items-center justify-center gap-1 font-normal ${config.className} ${buttonClasses}`}>
-      {config.icon}
-      <span className="hidden sm:inline">{config.label}</span>
-    </Badge>
-  );
-}
 
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -138,16 +47,13 @@ export function MemberTable() {
   );
 
   const handleExport = () => {
-    const headers = ['ID', 'Name', 'Email', 'Join Date', 'Current Month Status'];
-    const currentMonth = format(new Date(), 'yyyy-MM');
+    const headers = ['ID', 'Name', 'Email', 'Join Date'];
     const rows = filteredMembers.map((member) => {
-      const currentPayment = member.paymentHistory.find(p => p.month === currentMonth);
       return [
         member.id,
         `"${member.name}"`,
         member.email,
         member.joinDate,
-        currentPayment?.status || 'N/A',
       ].join(',');
     });
 
@@ -163,8 +69,6 @@ export function MemberTable() {
     document.body.removeChild(link);
   };
   
-  const currentMonth = format(new Date(), 'yyyy-MM');
-
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row items-center gap-4 py-4">
@@ -189,31 +93,22 @@ export function MemberTable() {
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Email</TableHead>
               <TableHead className="hidden lg:table-cell">Join Date</TableHead>
-              <TableHead>Current Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => {
-                const currentPayment = member.paymentHistory.find(p => p.month === currentMonth);
                 return (
                   <TableRow key={member.id} onClick={() => setSelectedMember(members.find(m => m.id === member.id) || null)} className="cursor-pointer">
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell className="hidden md:table-cell">{member.email}</TableCell>
                     <TableCell className="hidden lg:table-cell">{member.joinDate}</TableCell>
-                    <TableCell>
-                      {currentPayment ? (
-                        <PaymentStatusBadge status={currentPayment.status} />
-                      ) : (
-                        <Badge variant="secondary">N/A</Badge>
-                      )}
-                    </TableCell>
                   </TableRow>
                 )
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={3} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -235,10 +130,6 @@ export function MemberTable() {
                   member={selectedMember} 
                   onUpdate={handleMemberUpdate}
                 />
-            </div>
-            <div className="py-4">
-                <h3 className="text-lg font-semibold mb-4 font-headline">Monthly Payment History</h3>
-                <PaymentHistoryGrid member={selectedMember} onUpdate={handleMemberUpdate} />
             </div>
           </DialogContent>
         </Dialog>

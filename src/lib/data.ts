@@ -1,46 +1,5 @@
 import { subMonths, format, startOfMonth, eachDayOfInterval } from 'date-fns';
-import type { Member, Payment, PaymentStatus, DailyStatus } from './types';
-
-const generatePaymentHistory = (joinDate: Date): Payment[] => {
-  const history: Payment[] = [];
-  const now = new Date();
-  const startDate = new Date('2023-09-10');
-  const statuses: PaymentStatus[] = ['paid', 'unpaid'];
-
-  for (let i = 0; i < 15; i++) {
-    const date = subMonths(startDate, -i);
-    const monthStr = format(date, 'yyyy-MM');
-    const currentMonthStr = format(now, 'yyyy-MM');
-    
-    // Only add history if the month is on or after the member joined
-    // and not in the future (unless it's the current month).
-    if (startOfMonth(date) >= startOfMonth(joinDate) && date <= now) {
-      const status = monthStr === currentMonthStr
-        ? 'pending'
-        : statuses[Math.floor(Math.random() * statuses.length)];
-      
-      history.push({
-        month: monthStr,
-        status: status,
-      });
-    } else if (startOfMonth(date) >= startOfMonth(joinDate)) {
-       history.push({
-        month: monthStr,
-        status: 'pending',
-      });
-    }
-  }
-
-  // Ensure we have some history if join date is very recent
-  if (history.length === 0) {
-      history.push({
-        month: format(now, 'yyyy-MM'),
-        status: 'pending'
-      });
-  }
-
-  return history;
-};
+import type { Member, PaymentStatus, DailyStatus } from './types';
 
 const generateDailyStatuses = (): DailyStatus[] => {
   const statuses: DailyStatus[] = [];
@@ -53,11 +12,14 @@ const generateDailyStatuses = (): DailyStatus[] => {
 
   const interval = { start: startDate, end: endDate };
   const days = eachDayOfInterval(interval);
+  
+  const paidDate = '2025-09-10';
 
   days.forEach(day => {
+      const dateString = format(day, 'yyyy-MM-dd');
       statuses.push({
-          date: format(day, 'yyyy-MM-dd'),
-          status: 'unpaid'
+          date: dateString,
+          status: dateString === paidDate ? 'paid' : 'unpaid'
       });
   });
 
@@ -104,7 +66,6 @@ let memberData: Member[] = names.map((name, index) => {
     name,
     email: `${name.toLowerCase().replace(/ /g, '.').replace(/[^a-z.]/g, '')}${index}@example.com`,
     joinDate: format(joinDate, 'yyyy-MM-dd'),
-    paymentHistory: generatePaymentHistory(joinDate),
     dailyStatuses: generateDailyStatuses(),
   };
 });
