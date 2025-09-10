@@ -65,9 +65,19 @@ export function MemberTable() {
   }, []);
 
   const dateRange = React.useMemo(() => {
-    const from = date?.from || FullDateRange[0];
-    const to = date?.to || FullDateRange[FullDateRange.length - 1];
-    return eachDayOfInterval({ start: from, end: to });
+    const from = date?.from;
+    const to = date?.to;
+
+    if (from && !to) {
+      return [from];
+    }
+
+    if (from && to) {
+      return eachDayOfInterval({ start: from, end: to });
+    }
+    
+    return eachDayOfInterval({ start: FullDateRange[0], end: FullDateRange[FullDateRange.length - 1] });
+
   }, [date]);
 
   const payoutSchedule = React.useMemo(() => {
