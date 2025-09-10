@@ -38,7 +38,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useLocalStorage } from '@/hooks/use-local-storage';
 
 const FullDateRange = eachDayOfInterval({
   start: new Date('2025-09-10'),
@@ -57,8 +56,7 @@ export function MemberTable() {
     to: endOfMonth(new Date('2025-09-10')),
   };
 
-  const [date, setDate] = useLocalStorage<DateRange | undefined>(
-    'member-table-date-range',
+  const [date, setDate] = React.useState<DateRange | undefined>(
     defaultDateRange
   );
   
