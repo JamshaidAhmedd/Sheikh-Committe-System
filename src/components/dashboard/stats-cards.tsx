@@ -6,12 +6,15 @@ import { Users, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
 import { DailyStatusDialog } from './daily-status-dialog';
 import type { Member } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 export function StatsCards() {
   const [dialogOpen, setDialogOpen] = React.useState<false | 'paid' | 'unpaid'>(false);
   
-  const totalMembers = members.length;
-  const today = format(new Date('2025-09-10'), 'yyyy-MM-dd');
+  // Note: For a real app, you would use the current date.
+  // We are using a fixed date for demonstration purposes of this prototype.
+  const today = '2025-09-10';
+  const formattedDate = format(new Date(today), 'do MMMM, yyyy');
 
   const paidMembers = members.filter((member) =>
     member.dailyStatuses.some(
@@ -25,8 +28,9 @@ export function StatsCards() {
     )
   );
   
+  const totalMembers = members.length;
   const paidToday = paidMembers.length;
-  const unpaidToday = totalMembers - paidToday;
+  const unpaidToday = unpaidMembers.length;
 
 
   const stats = [
@@ -38,14 +42,14 @@ export function StatsCards() {
       members: []
     },
     {
-      title: 'Paid Today',
+      title: `Paid on ${format(new Date(today), 'do MMM')}`,
       value: paidToday,
       icon: UserCheck,
       dialog: 'paid' as const,
       members: paidMembers
     },
     {
-      title: 'Unpaid Today',
+      title: `Unpaid on ${format(new Date(today), 'do MMM')}`,
       value: unpaidToday,
       icon: UserX,
       dialog: 'unpaid' as const,
@@ -79,7 +83,7 @@ export function StatsCards() {
         onOpenChange={(isOpen) => !isOpen && setDialogOpen(false)}
         members={currentDialogMembers}
         status={dialogOpen || 'unpaid'}
-        date={format(new Date(today), 'do MMMM, yyyy')}
+        date={formattedDate}
       />
     </>
   );
