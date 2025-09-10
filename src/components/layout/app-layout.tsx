@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, HandCoins, LogOut, Eye } from 'lucide-react';
+import { BarChart, Users, HandCoins, Eye } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -15,34 +15,15 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-  SidebarFooter,
 } from '@/components/ui/sidebar';
-import { useAuth } from '@/context/auth-context';
-import { useRouter } from 'next/navigation';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
-  const router = useRouter();
 
-  const publicRoutes = ['/login', '/guest'];
+  const isGuestView = pathname === '/guest';
 
-  React.useEffect(() => {
-    if (!user && !publicRoutes.includes(pathname)) {
-      router.push('/login');
-    }
-  }, [user, pathname, router]);
-
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
-  };
-
-  if (!user) {
-     if (publicRoutes.includes(pathname)) {
-        return <>{children}</>;
-     }
-     return null;
+  if (isGuestView) {
+    return <>{children}</>;
   }
 
   return (
@@ -63,10 +44,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === '/'}
+                isActive={pathname === '/dashboard'}
                 tooltip="Dashboard"
               >
-                <Link href="/">
+                <Link href="/dashboard">
                   <BarChart />
                   <span>Dashboard</span>
                 </Link>
@@ -110,23 +91,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
-                        <LogOut />
-                        <span>Logout</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/95 backdrop-blur-sm sm:px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1">
              <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
-                {pathname === '/' ? 'Dashboard' : ''}
+                {pathname === '/dashboard' ? 'Dashboard' : ''}
                 {pathname.startsWith('/members') ? 'Member Directory' : ''}
                 {pathname.startsWith('/payouts') ? 'Payout Schedule' : ''}
              </h1>
