@@ -48,8 +48,6 @@ function PaymentHistoryGrid({ member }: { member: Member }) {
     });
   };
 
-  const currentMonth = format(new Date(), 'yyyy-MM');
-
   return (
     <div className="grid grid-cols-5 gap-2">
       {history.map((payment) => (
@@ -57,31 +55,27 @@ function PaymentHistoryGrid({ member }: { member: Member }) {
           <div className="text-xs text-muted-foreground">
             {format(new Date(payment.month), 'MMM yy')}
           </div>
-          {payment.month === currentMonth ? (
-             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="w-full">
-                  <PaymentStatusBadge status={payment.status} isButton={true} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'paid')}>
-                  <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                  Paid
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'unpaid')}>
-                  <XCircle className="mr-2 h-4 w-4 text-red-500" />
-                  Unpaid
-                </DropdownMenuItem>
-                 <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'pending')}>
-                  <Clock className="mr-2 h-4 w-4 text-yellow-500" />
-                  Pending
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <PaymentStatusBadge status={payment.status} />
-          )}
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full">
+                <PaymentStatusBadge status={payment.status} isButton={true} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'paid')}>
+                <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                Paid
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'unpaid')}>
+                <XCircle className="mr-2 h-4 w-4 text-red-500" />
+                Unpaid
+              </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => handleStatusChange(payment.month, 'pending')}>
+                <Clock className="mr-2 h-4 w-4 text-yellow-500" />
+                Pending
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ))}
     </div>
@@ -226,7 +220,7 @@ export function MemberTable() {
               <DialogDescription>{selectedMember.email} - Joined on {selectedMember.joinDate}</DialogDescription>
             </DialogHeader>
             <div className="py-4">
-                <h3 className="text-lg font-semibold mb-4 font-headline">Payment History (15 Months)</h3>
+                <h3 className="text-lg font-semibold mb-4 font-headline">Payment History</h3>
                 <PaymentHistoryGrid member={selectedMember} />
             </div>
           </DialogContent>

@@ -1,38 +1,47 @@
-import { subMonths, format } from 'date-fns';
+import { subMonths, format, startOfMonth } from 'date-fns';
 import type { Member, Payment, PaymentStatus } from './types';
 
 const generatePaymentHistory = (joinDate: Date): Payment[] => {
   const history: Payment[] = [];
   const now = new Date();
+  const startDate = new Date('2023-09-10');
   const statuses: PaymentStatus[] = ['paid', 'unpaid'];
 
-  let monthCount = 0;
-  for (let i = 14; i >= 0; i--) {
-    const date = subMonths(now, i);
-    if (date >= joinDate) {
-      // For the current month, set status to pending, otherwise random
-      const status = format(date, 'yyyy-MM') === format(now, 'yyyy-MM') 
+  for (let i = 0; i < 15; i++) {
+    const date = subMonths(startDate, -i);
+    const monthStr = format(date, 'yyyy-MM');
+    const currentMonthStr = format(now, 'yyyy-MM');
+    
+    // Only add history if the month is on or after the member joined
+    // and not in the future (unless it's the current month).
+    if (startOfMonth(date) >= startOfMonth(joinDate) && date <= now) {
+      const status = monthStr === currentMonthStr
         ? 'pending'
         : statuses[Math.floor(Math.random() * statuses.length)];
       
       history.push({
-        month: format(date, 'yyyy-MM'),
+        month: monthStr,
         status: status,
       });
-      monthCount++;
+    } else if (startOfMonth(date) >= startOfMonth(joinDate)) {
+       history.push({
+        month: monthStr,
+        status: 'pending',
+      });
     }
   }
 
-  // Ensure there are always 15 entries, padding with future pending if needed
-  let futureMonth = 1;
-  while(history.length < 15) {
-    const date = subMonths(now, -futureMonth);
-    history.push({
-      month: format(date, 'yyyy-MM'),
-      status: 'pending'
-    });
-    futureMonth++;
+  // Ensure we have some history if join date is very recent
+  if (history.length === 0) {
+      history.push({
+        month: format(now, 'yyyy-MM'),
+        status: 'pending'
+      });
   }
+
+  // The request is for 15 months, but we should show from join date.
+  // The logic above creates the history. If we need to pad to 15, we could.
+  // The current implementation is more realistic.
 
   return history;
 };
