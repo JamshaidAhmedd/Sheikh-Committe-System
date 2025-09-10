@@ -31,11 +31,19 @@ export default function LoginPage() {
       login(username, password);
       router.push('/dashboard');
     } catch (error) {
-      toast({
-        title: 'Login Failed',
-        description: (error as Error).message,
-        variant: 'destructive',
-      });
+      if (error instanceof Error) {
+        toast({
+          title: 'Login Failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Login Failed',
+          description: 'An unknown error occurred.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
