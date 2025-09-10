@@ -19,10 +19,26 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../ui/button';
+import { WavyDivider } from '@/components/common/wavy-divider';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { logout } = useAuth();
+
+  const pageTitles: { [key: string]: string } = {
+    '/dashboard': 'Dashboard',
+    '/members': 'Member Directory',
+    '/payouts': 'Payout Schedule',
+  };
+
+  const getPageTitle = () => {
+    for (const path in pageTitles) {
+      if (pathname.startsWith(path)) {
+        return pageTitles[path];
+      }
+    }
+    return 'Sheikh Committee';
+  };
 
   return (
     <SidebarProvider>
@@ -107,14 +123,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/95 backdrop-blur-sm sm:px-6">
-          <SidebarTrigger className="md:hidden" />
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
-              {pathname === '/dashboard' ? 'Dashboard' : ''}
-              {pathname.startsWith('/members') ? 'Member Directory' : ''}
-              {pathname.startsWith('/payouts') ? 'Payout Schedule' : ''}
-            </h1>
+        <header className="sticky top-0 z-10 flex flex-col items-center border-b bg-background/95 backdrop-blur-sm">
+          <div className="flex items-center h-16 px-4 sm:px-6 w-full">
+            <SidebarTrigger className="md:hidden" />
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
+                {getPageTitle()}
+              </h1>
+            </div>
+          </div>
+          <div className="w-full -mb-1">
+             <WavyDivider />
           </div>
         </header>
         {children}

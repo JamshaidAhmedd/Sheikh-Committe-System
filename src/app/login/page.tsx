@@ -44,65 +44,96 @@ export default function LoginPage() {
     router.push('/guest');
   };
 
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background">
-      <div className="flex items-center gap-2 p-2 justify-center mb-4">
-        <Image
-          src="/IMG_2065.PNG?v=1"
-          alt="Sheikh Committee Logo"
-          width={40}
-          height={40}
-          className="rounded-full"
+  const WavyBackground = () => (
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+      <svg
+        className="absolute left-0 top-0 w-[150%] h-full text-primary/30 -translate-x-1/2"
+        viewBox="0 0 800 800"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill="currentColor"
+          d="M400 0C400 0 400 200 400 400C400 600 400 800 400 800C250 800 100 800 0 800C0 600 0 400 0 200C0 100 100 0 200 0C300 0 400 0 400 0Z"
+          transform="translate(400 400) rotate(180) translate(-400 -400)"
         />
-        <h1 className="text-3xl font-headline font-bold">Sheikh Committee</h1>
+      </svg>
+      <svg
+        className="absolute right-0 bottom-0 w-[150%] h-full text-primary/50 -translate-y-1/4"
+        viewBox="0 0 800 800"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill="currentColor"
+          d="M400 0C400 0 400 200 400 400C400 600 400 800 400 800C250 800 100 800 0 800C0 600 0 400 0 200C0 100 100 0 200 0C300 0 400 0 400 0Z"
+        />
+      </svg>
+    </div>
+  );
+
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background overflow-hidden">
+      <WavyBackground />
+      <div className="relative z-10 flex flex-col items-center justify-center w-full">
+        <div className="flex items-center gap-4 p-2 justify-center mb-6 flex-col">
+          <Image
+            src="/IMG_2065.PNG?v=1"
+            alt="Sheikh Committee Logo"
+            width={120}
+            height={120}
+            className="rounded-full shadow-2xl"
+          />
+          <h1 className="text-5xl font-headline font-bold text-foreground">
+            Sheikh Committee
+          </h1>
+        </div>
+        <Card className="w-full max-w-sm bg-card/80 backdrop-blur-sm border-border/50 shadow-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl">Admin Login</CardTitle>
+            <CardDescription>
+              Enter your credentials to access the admin dashboard.
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleLogin}>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                Sign in
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-primary hover:bg-primary/10 hover:text-primary"
+                onClick={handleGuestView}
+                type="button"
+              >
+                View as Guest
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <CardDescription>
-            Enter your credentials to access the admin dashboard.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">
-              Sign in
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleGuestView}
-              type="button"
-            >
-              View as Guest
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
     </div>
   );
 }
