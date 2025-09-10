@@ -81,7 +81,8 @@ export function MemberTable() {
       schedule.set(dateString, member.name);
     });
     return schedule;
-  }, [members]);
+  }, [members, payoutStartDate]);
+
 
   const handleStatusChange = (
     memberId: string,
