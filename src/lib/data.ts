@@ -38,10 +38,36 @@ const generatePaymentHistory = (joinDate: Date): Payment[] => {
 };
 
 const names = [
-  'Abbas Al-Farsi', 'Zainab Al-Saeed', 'Karim Al-Jamil', 'Fatima Al-Haddad', 'Tariq Al-Mansoori',
-  'Layla Al-Hashimi', 'Mustafa Al-Katib', 'Nadia Al-Qureshi', 'Omar Al-Zahrani', 'Samira Al-Najjar',
-  'Yusuf Al-Baghdadi', 'Aisha Al-Amiri', 'Hassan Al-Khayyat', 'Jamila Al-Shammari', 'Rashid Al-Mazrui',
-  'Farah Al-Rashed', 'Ibrahim Al-Ghanim', 'Maryam Al-Kuwari', 'Khalid Al-Sulaiman', 'Hana Al-Otaibi',
+  'Mughees',
+  'Mujeeb',
+  'Sohaib Sultan',
+  'Usama Khizer',
+  'Aslan',
+  'Usama',
+  'Malaika',
+  'Maa Jee',
+  'haseeb',
+  'Ramzan',
+  'Mughees',
+  'Khuzaima',
+  'Abdul Rehman',
+  'Mujeeb',
+  'Khuzaima',
+  'Usama Khizer',
+  'Sohaib Sultan',
+  'Malaika',
+  'Sohaib Sultan',
+  'Mughees',
+  'Usama Khizer',
+  'API',
+  'Malaika',
+  'Sohaib Sultan',
+  'Usama Khizer',
+  'Sohaib Sultan',
+  'Malaika',
+  'Mughees',
+  'Malaika',
+  'Khuzaima',
 ];
 
 export const members: Member[] = names.map((name, index) => {
@@ -49,7 +75,7 @@ export const members: Member[] = names.map((name, index) => {
   return {
     id: `MEM${1001 + index}`,
     name,
-    email: `${name.toLowerCase().replace(' ', '.')}@example.com`,
+    email: `${name.toLowerCase().replace(/ /g, '.').replace(/[^a-z.]/g, '')}${index}@example.com`,
     joinDate: format(joinDate, 'yyyy-MM-dd'),
     paymentHistory: generatePaymentHistory(joinDate),
   };
