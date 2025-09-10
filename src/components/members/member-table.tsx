@@ -49,7 +49,7 @@ const FullDateRange = eachDayOfInterval({
 
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [members, setMembersState] = React.useState<Member[]>(allMembers);
+  const [members, setMembersState] = React.useState<Member[]>([]);
   const { toast } = useToast();
 
   const defaultDateRange: DateRange = {
@@ -61,6 +61,10 @@ export function MemberTable() {
     'member-table-date-range',
     defaultDateRange
   );
+  
+  React.useEffect(() => {
+    setMembersState(allMembers);
+  }, []);
 
   const dateRange = React.useMemo(() => {
     const from = date?.from || FullDateRange[0];
@@ -78,10 +82,6 @@ export function MemberTable() {
     });
     return schedule;
   }, [members]);
-
-  React.useEffect(() => {
-    setMembersState(allMembers);
-  }, []);
 
   const handleStatusChange = (
     memberId: string,
