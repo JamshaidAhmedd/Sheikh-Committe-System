@@ -15,7 +15,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { OverviewChart } from '@/components/dashboard/overview-chart';
 import { members } from '@/lib/data';
-import { Building2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl">
         <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 p-2 justify-center mb-4">
-                <Building2 className="w-10 h-10 text-primary" />
+                <Image src="/logo.png" alt="Sheikh Committee Logo" width={40} height={40} className="rounded-full" />
                 <h1 className="text-3xl font-headline font-bold">
                     Sheikh Committee
                 </h1>

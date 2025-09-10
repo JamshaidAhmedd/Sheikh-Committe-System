@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, Building2, HandCoins, LogOut } from 'lucide-react';
+import { BarChart, Users, HandCoins, LogOut } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -44,7 +45,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <Building2 className="w-8 h-8 text-primary" />
+            <Image src="/logo.png" alt="Sheikh Committee Logo" width={32} height={32} className="rounded-full" />
             <h1 className="text-xl font-headline font-bold">
               <span className="group-data-[collapsible=icon]:hidden">
                 Sheikh Committee
