@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Card, CardContent } from '@/components/ui/card';
 
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -31,7 +32,7 @@ export function MemberTable() {
   const { toast } = useToast();
 
   const startDate = new Date('2025-09-10');
-  const endDate = addDays(startDate, 30);
+  const endDate = addDays(startDate, 365); // 15 months approx
   const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
 
   const payoutStartDate = new Date('2025-09-24');
@@ -78,7 +79,7 @@ export function MemberTable() {
 
     toast({
       title: 'Status Updated',
-      description: `${memberName}'s status for ${format(date, 'do MMMM')} set to ${newStatus}.`,
+      description: `${memberName}'s status for ${format(date, 'do MMMM yyyy')} set to ${newStatus}.`,
     });
   };
 
@@ -115,7 +116,6 @@ export function MemberTable() {
   
   return (
     <TooltipProvider>
-      <div className="w-full">
         <div className="flex flex-col sm:flex-row items-center gap-4 py-4">
           <div className="relative w-full sm:w-auto flex-1 sm:flex-grow-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -131,70 +131,77 @@ export function MemberTable() {
             Export CSV
           </Button>
         </div>
-        <div className="rounded-lg border overflow-x-auto">
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="sticky left-0 bg-background z-10 w-[200px] min-w-[200px]">Name</TableHead>
-                {dateRange.map(date => {
-                  const dateString = format(date, 'yyyy-MM-dd');
-                  const payoutMember = payoutSchedule.get(dateString);
-                  return (
-                    <TableHead key={dateString} className={cn("text-center w-[100px]", {'bg-green-50': payoutMember})}>
-                       {payoutMember ? (
-                        <Tooltip>
-                          <TooltipTrigger className="flex items-center gap-1 mx-auto">
-                            <Gift className="h-4 w-4 text-green-600"/>
-                            <span>{format(date, 'dd MMM')}</span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Payout to: {payoutMember}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        format(date, 'dd MMM')
-                      )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMembers.length > 0 ? (
-                filteredMembers.map((member) => {
-                  const dailyStatuses = new Map(member.dailyStatuses.map(ds => [ds.date, ds.status]));
-                  return (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium sticky left-0 bg-background z-10 w-[200px] min-w-[200px]">{member.name}</TableCell>
-                      {dateRange.map(date => {
-                        const dateString = format(date, 'yyyy-MM-dd');
-                        const status = dailyStatuses.get(dateString);
-                        const payoutMember = payoutSchedule.get(dateString);
-                        
-                        return (
-                          <TableCell key={dateString} className={cn("text-center", {'bg-green-50': payoutMember})}>
-                              <Checkbox
-                                  checked={status === 'paid'}
-                                  onCheckedChange={(checked) => handleStatusChange(member.id, date, !!checked)}
-                                  aria-label={`Mark ${member.name} as paid for ${dateString}`}
-                              />
-                          </TableCell>
-                        )
-                      })}
+        <Card>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="sticky left-0 bg-card z-10 w-[200px] min-w-[200px] border-r">Name</TableHead>
+                    {dateRange.map(date => {
+                      const dateString = format(date, 'yyyy-MM-dd');
+                      const payoutMember = payoutSchedule.get(dateString);
+                      return (
+                        <TableHead key={dateString} className={cn("text-center w-[150px] min-w-[150px] border-r", {'bg-green-50': payoutMember})}>
+                           <div className="flex flex-col items-center justify-center h-full">
+                            <span className="text-xs text-muted-foreground">{format(date, 'MMM yyyy')}</span>
+                            <span className="font-bold text-lg">{format(date, 'dd')}</span>
+                             {payoutMember && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 mt-1 cursor-default">
+                                      <Gift className="h-4 w-4 text-green-600"/>
+                                      <span className="text-xs font-medium text-green-700">{payoutMember}</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Payout to: {payoutMember}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                           </div>
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredMembers.length > 0 ? (
+                    filteredMembers.map((member) => {
+                      const dailyStatuses = new Map(member.dailyStatuses.map(ds => [ds.date, ds.status]));
+                      return (
+                        <TableRow key={member.id}>
+                          <TableCell className="font-medium sticky left-0 bg-card z-10 w-[200px] min-w-[200px] border-r">{member.name}</TableCell>
+                          {dateRange.map(date => {
+                            const dateString = format(date, 'yyyy-MM-dd');
+                            const status = dailyStatuses.get(dateString);
+                            const payoutMember = payoutSchedule.get(dateString);
+                            
+                            return (
+                              <TableCell key={dateString} className={cn("text-center border-r", {'bg-green-50': payoutMember})}>
+                                  <Checkbox
+                                      checked={status === 'paid'}
+                                      onCheckedChange={(checked) => handleStatusChange(member.id, date, !!checked)}
+                                      aria-label={`Mark ${member.name} as paid for ${dateString}`}
+                                  />
+                              </TableCell>
+                            )
+                          })}
+                        </TableRow>
+                      )
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={dateRange.length + 1} className="h-24 text-center">
+                        No results.
+                      </TableCell>
                     </TableRow>
-                  )
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={dateRange.length + 1} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
     </TooltipProvider>
   );
 }
