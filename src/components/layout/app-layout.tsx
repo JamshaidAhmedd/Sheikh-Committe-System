@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, HandCoins, Eye } from 'lucide-react';
+import { BarChart, Users, HandCoins, Eye, LogOut } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -15,23 +15,27 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '../ui/button';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  const isGuestView = pathname === '/guest';
-
-  if (isGuestView) {
-    return <>{children}</>;
-  }
+  const { logout } = useAuth();
 
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <Image src="/IMG_2065.PNG" alt="Sheikh Committee Logo" width={32} height={32} className="rounded-full" />
+            <Image
+              src="/IMG_2065.PNG"
+              alt="Sheikh Committee Logo"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
             <h1 className="text-xl font-headline font-bold">
               <span className="group-data-[collapsible=icon]:hidden">
                 Sheikh Committee
@@ -91,16 +95,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={logout} tooltip="Logout">
+                <LogOut />
+                <span>Logout</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/95 backdrop-blur-sm sm:px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1">
-             <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
-                {pathname === '/dashboard' ? 'Dashboard' : ''}
-                {pathname.startsWith('/members') ? 'Member Directory' : ''}
-                {pathname.startsWith('/payouts') ? 'Payout Schedule' : ''}
-             </h1>
+            <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
+              {pathname === '/dashboard' ? 'Dashboard' : ''}
+              {pathname.startsWith('/members') ? 'Member Directory' : ''}
+              {pathname.startsWith('/payouts') ? 'Payout Schedule' : ''}
+            </h1>
           </div>
         </header>
         {children}

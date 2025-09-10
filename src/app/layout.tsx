@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { AppLayout } from '@/components/layout/app-layout';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/context/AuthContext';
+import { AppContent } from '@/components/layout/AppContent';
 
 export const metadata: Metadata = {
   title: 'Sheikh Committee System',
@@ -28,8 +29,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AppLayout>{children}</AppLayout>
-        <Toaster />
+        <AuthProvider>
+          <AppContent>{children}</AppContent>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

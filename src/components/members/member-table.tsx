@@ -39,14 +39,13 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 
-const FullDateRange = eachDayOfInterval({
-  start: new Date('2025-09-10'),
-  end: addDays(new Date('2025-09-10'), 365),
-});
-
 const payoutStartDate = new Date('2025-09-24');
 
-export function MemberTable() {
+interface MemberTableProps {
+  isReadOnly?: boolean;
+}
+
+export function MemberTable({ isReadOnly = false }: MemberTableProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [members, setMembersState] = React.useState<Member[]>([]);
   const { toast } = useToast();
@@ -59,7 +58,7 @@ export function MemberTable() {
   const [date, setDate] = React.useState<DateRange | undefined>(
     defaultDateRange
   );
-  
+
   React.useEffect(() => {
     setMembersState(allMembers);
   }, []);
@@ -69,16 +68,18 @@ export function MemberTable() {
     const to = date?.to;
 
     if (from && !to) {
-      return [from];
+      return eachDayOfInterval({ start: from, end: from });
     }
 
     if (from && to) {
       return eachDayOfInterval({ start: from, end: to });
     }
-    
-    return eachDayOfInterval({ start: FullDateRange[0], end: FullDateRange[FullDateRange.length - 1] });
 
-  }, [date]);
+    return eachDayOfInterval({
+      start: defaultDateRange.from!,
+      end: defaultDateRange.to!,
+    });
+  }, [date, defaultDateRange.from, defaultDateRange.to]);
 
   const payoutSchedule = React.useMemo(() => {
     const schedule = new Map<string, string>();
@@ -90,12 +91,13 @@ export function MemberTable() {
     return schedule;
   }, [members]);
 
-
   const handleStatusChange = (
     memberId: string,
     date: Date,
     checked: boolean
   ) => {
+    if (isReadOnly) return;
+
     const newStatus = checked ? 'paid' : 'unpaid';
     const dateString = format(date, 'yyyy-MM-dd');
 
@@ -219,14 +221,16 @@ export function MemberTable() {
             />
           </PopoverContent>
         </Popover>
-        <Button
-          onClick={handleExport}
-          variant="outline"
-          className="w-full sm:w-auto"
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Export CSV
-        </Button>
+        {!isReadOnly && (
+          <Button
+            onClick={handleExport}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
+        )}
       </div>
       <Card>
         <CardContent className="p-0">
@@ -304,6 +308,7 @@ export function MemberTable() {
                                 onCheckedChange={(checked) =>
                                   handleStatusChange(member.id, date, !!checked)
                                 }
+                                disabled={isReadOnly}
                                 aria-label={`Mark ${member.name} as paid for ${dateString}`}
                               />
                             </TableCell>
