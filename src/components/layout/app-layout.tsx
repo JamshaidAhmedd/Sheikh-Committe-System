@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, HandCoins, LogOut } from 'lucide-react';
+import { BarChart, Users, HandCoins, LogOut, Eye } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -25,8 +25,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const router = useRouter();
 
+  const publicRoutes = ['/login', '/guest'];
+
   React.useEffect(() => {
-    if (!user && pathname !== '/login') {
+    if (!user && !publicRoutes.includes(pathname)) {
       router.push('/login');
     }
   }, [user, pathname, router]);
@@ -37,7 +39,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   if (!user) {
-    return <>{children}</>;
+     if (publicRoutes.includes(pathname)) {
+        return <>{children}</>;
+     }
+     return null;
   }
 
   return (
@@ -88,6 +93,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/payouts">
                   <HandCoins />
                   <span>Payouts</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/guest')}
+                tooltip="Guest View"
+              >
+                <Link href="/guest" target="_blank">
+                  <Eye />
+                  <span>Guest View</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

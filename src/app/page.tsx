@@ -1,11 +1,19 @@
-import { StatsCards } from '@/components/dashboard/stats-cards';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
-export default function DashboardPage() {
-  return (
-    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatsCards />
-      </div>
-    </main>
-  );
+export default function HomePage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/login');
+    }
+  }, [user, router]);
+
+  return null; 
 }
