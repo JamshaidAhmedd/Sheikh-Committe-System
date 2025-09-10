@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart, Users, Building2 } from 'lucide-react';
+import { BarChart, Users, Building2, HandCoins } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -58,6 +58,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/payouts')}
+                tooltip="Payouts"
+              >
+                <Link href="/payouts">
+                  <HandCoins />
+                  <span>Payouts</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
@@ -68,6 +80,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
              <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
                 {pathname === '/' ? 'Dashboard' : ''}
                 {pathname.startsWith('/members') ? 'Member Directory' : ''}
+                {pathname.startsWith('/payouts') ? 'Payout Schedule' : ''}
              </h1>
           </div>
         </header>
