@@ -47,25 +47,26 @@ export default function LoginPage() {
   const WavyBackground = () => (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
       <svg
-        className="absolute left-0 top-0 w-[150%] h-full text-primary/30 -translate-x-1/2"
-        viewBox="0 0 800 800"
+        className="absolute bottom-0 left-0 mb-[-10px] w-full text-primary/30"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
       >
         <path
           fill="currentColor"
-          d="M400 0C400 0 400 200 400 400C400 600 400 800 400 800C250 800 100 800 0 800C0 600 0 400 0 200C0 100 100 0 200 0C300 0 400 0 400 0Z"
-          transform="translate(400 400) rotate(180) translate(-400 -400)"
-        />
+          fillOpacity="1"
+          d="M0,224L48,208C96,192,192,160,288,165.3C384,171,480,213,576,202.7C672,192,768,128,864,117.3C960,107,1056,149,1152,160C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
       </svg>
       <svg
-        className="absolute right-0 bottom-0 w-[150%] h-full text-primary/50 -translate-y-1/4"
-        viewBox="0 0 800 800"
+        className="absolute bottom-0 left-0 mb-[-5px] w-full text-primary/50"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
       >
         <path
           fill="currentColor"
-          d="M400 0C400 0 400 200 400 400C400 600 400 800 400 800C250 800 100 800 0 800C0 600 0 400 0 200C0 100 100 0 200 0C300 0 400 0 400 0Z"
-        />
+          fillOpacity="1"
+          d="M0,128L48,138.7C96,149,192,171,288,186.7C384,203,480,213,576,192C672,171,768,117,864,101.3C960,85,1056,107,1152,133.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        ></path>
       </svg>
     </div>
   );
@@ -73,7 +74,7 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background overflow-hidden">
       <WavyBackground />
-      <div className="relative z-10 flex flex-col items-center justify-center w-full">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full animate-fade-in-up">
         <div className="flex items-center gap-4 p-2 justify-center mb-6 flex-col">
           <Image
             src="/IMG_2065.PNG?v=1"

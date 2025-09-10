@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '../ui/button';
-import { WavyDivider } from '@/components/common/wavy-divider';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -123,17 +122,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex flex-col items-center border-b bg-background/95 backdrop-blur-sm">
-          <div className="flex items-center h-16 px-4 sm:px-6 w-full">
-            <SidebarTrigger className="md:hidden" />
-            <div className="flex-1">
-              <h1 className="text-lg font-semibold font-headline ml-4 md:ml-0">
-                {getPageTitle()}
-              </h1>
-            </div>
-          </div>
-          <div className="w-full -mb-1">
-             <WavyDivider />
+        <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background/95 px-4 backdrop-blur-sm sm:px-6">
+          <SidebarTrigger className="md:hidden" />
+          <div className="flex-1">
+            <h1 className="ml-4 text-lg font-semibold font-headline md:ml-0">
+              {getPageTitle()}
+            </h1>
           </div>
         </header>
         {children}
