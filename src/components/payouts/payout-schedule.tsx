@@ -18,7 +18,7 @@ import { members } from '@/lib/data';
 import { addDays, format } from 'date-fns';
 
 export function PayoutSchedule() {
-  const startDate = new Date('2023-09-24');
+  const startDate = new Date('2025-09-24');
   const payoutSchedule = members.map((member, index) => {
     const payoutDate = addDays(startDate, index * 15);
     return {
