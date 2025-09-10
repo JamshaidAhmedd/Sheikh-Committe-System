@@ -7,8 +7,6 @@ import {
   format,
   addDays,
   eachDayOfInterval,
-  isSameDay,
-  parseISO,
   startOfMonth,
   endOfMonth,
 } from 'date-fns';
@@ -47,6 +45,8 @@ const FullDateRange = eachDayOfInterval({
   end: addDays(new Date('2025-09-10'), 365),
 });
 
+const payoutStartDate = new Date('2025-09-24');
+
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [members, setMembersState] = React.useState<Member[]>([]);
@@ -72,7 +72,6 @@ export function MemberTable() {
     return eachDayOfInterval({ start: from, end: to });
   }, [date]);
 
-  const payoutStartDate = new Date('2025-09-24');
   const payoutSchedule = React.useMemo(() => {
     const schedule = new Map<string, string>();
     members.forEach((member, index) => {
@@ -81,7 +80,7 @@ export function MemberTable() {
       schedule.set(dateString, member.name);
     });
     return schedule;
-  }, [members, payoutStartDate]);
+  }, [members]);
 
 
   const handleStatusChange = (
