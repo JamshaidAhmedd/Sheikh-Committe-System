@@ -15,29 +15,48 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { DailyStatusCalendar } from './daily-status-calendar';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 
 export function MemberTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [members, setMembersState] = React.useState<Member[]>(allMembers);
-  const [selectedMember, setSelectedMember] = React.useState<Member | null>(null);
+  const { toast } = useToast();
+  
+  const today = format(new Date('2025-09-10'), 'yyyy-MM-dd');
 
   React.useEffect(() => {
     setMembersState(allMembers);
   }, []);
 
-  const handleMemberUpdate = (updatedMember: Member) => {
-    const newMembers = members.map(m => m.id === updatedMember.id ? updatedMember : m);
+  const handleStatusChange = (memberId: string, checked: boolean) => {
+    const newStatus = checked ? 'paid' : 'unpaid';
+    
+    let memberName = '';
+
+    const newMembers = members.map(m => {
+      if (m.id === memberId) {
+        memberName = m.name;
+        const updatedDailyStatuses = m.dailyStatuses.map(ds =>
+          ds.date === today ? { ...ds, status: newStatus } : ds
+        );
+
+        if (!m.dailyStatuses.find(ds => ds.date === today)) {
+          updatedDailyStatuses.push({ date: today, status: newStatus });
+        }
+        
+        return { ...m, dailyStatuses: updatedDailyStatuses };
+      }
+      return m;
+    });
+
     setMembersState(newMembers);
     setMembers(newMembers); // This updates the global data store
-    setSelectedMember(updatedMember);
+
+    toast({
+      title: 'Status Updated',
+      description: `${memberName}'s status for today set to ${newStatus}.`,
+    });
   };
 
   const filteredMembers = members.filter(
@@ -47,13 +66,15 @@ export function MemberTable() {
   );
 
   const handleExport = () => {
-    const headers = ['ID', 'Name', 'Email', 'Join Date'];
+    const headers = ['ID', 'Name', 'Email', 'Join Date', `Paid on ${today}`];
     const rows = filteredMembers.map((member) => {
+      const paidToday = member.dailyStatuses.some(ds => ds.date === today && ds.status === 'paid');
       return [
         member.id,
         `"${member.name}"`,
         member.email,
         member.joinDate,
+        paidToday ? 'Yes' : 'No',
       ].join(',');
     });
 
@@ -62,7 +83,7 @@ export function MemberTable() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', 'members.csv');
+    link.setAttribute('download', `members_${today}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -92,17 +113,24 @@ export function MemberTable() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Email</TableHead>
-              <TableHead className="hidden lg:table-cell">Join Date</TableHead>
+              <TableHead className="w-[120px]">Paid Today</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => {
+                const paidToday = member.dailyStatuses.find(ds => ds.date === today)?.status === 'paid';
                 return (
-                  <TableRow key={member.id} onClick={() => setSelectedMember(members.find(m => m.id === member.id) || null)} className="cursor-pointer">
+                  <TableRow key={member.id}>
                     <TableCell className="font-medium">{member.name}</TableCell>
                     <TableCell className="hidden md:table-cell">{member.email}</TableCell>
-                    <TableCell className="hidden lg:table-cell">{member.joinDate}</TableCell>
+                    <TableCell>
+                        <Checkbox
+                            checked={paidToday}
+                            onCheckedChange={(checked) => handleStatusChange(member.id, !!checked)}
+                            aria-label={`Mark ${member.name} as paid for today`}
+                        />
+                    </TableCell>
                   </TableRow>
                 )
               })
@@ -116,24 +144,6 @@ export function MemberTable() {
           </TableBody>
         </Table>
       </div>
-
-      {selectedMember && (
-        <Dialog open={!!selectedMember} onOpenChange={(open) => !open && setSelectedMember(null)}>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="font-headline text-2xl">{selectedMember.name}</DialogTitle>
-              <DialogDescription>{selectedMember.email} - Joined on {selectedMember.joinDate}</DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-                <h3 className="text-lg font-semibold mb-4 font-headline">Daily Payment Status</h3>
-                <DailyStatusCalendar 
-                  member={selectedMember} 
-                  onUpdate={handleMemberUpdate}
-                />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
