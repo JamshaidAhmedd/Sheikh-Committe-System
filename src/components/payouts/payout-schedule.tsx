@@ -1,8 +1,5 @@
 'use client';
-<<<<<<< HEAD
 import * as React from 'react';
-=======
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 import {
   Card,
   CardContent,
@@ -18,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-<<<<<<< HEAD
 import { DataService } from '@/lib/data';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -67,37 +63,11 @@ export function PayoutSchedule() {
       <CardHeader>
         <CardTitle className="gradient-text text-2xl">Payout Schedule</CardTitle>
         <CardDescription className="text-slate-600">
-=======
-import { members } from '@/lib/data';
-import { addDays, format } from 'date-fns';
-
-export function PayoutSchedule() {
-  const startDate = new Date('2025-09-24');
-  const payoutSchedule = members.map((member, index) => {
-    const payoutDate = addDays(startDate, index * 15);
-    return {
-      memberId: member.id,
-      memberName: member.name,
-      payoutDate: format(payoutDate, 'do MMMM, yyyy'),
-      sequence: index + 1,
-    };
-  });
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Payout Schedule</CardTitle>
-        <CardDescription>
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
           Schedule of bi-weekly payouts to members.
         </CardDescription>
       </CardHeader>
       <CardContent>
-<<<<<<< HEAD
         <div className="rounded-xl border border-white/30 bg-white/50 backdrop-blur-sm">
-=======
-        <div className="rounded-lg border">
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
           <Table>
             <TableHeader>
               <TableRow>
@@ -107,7 +77,6 @@ export function PayoutSchedule() {
               </TableRow>
             </TableHeader>
             <TableBody>
-<<<<<<< HEAD
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center">
@@ -137,17 +106,6 @@ export function PayoutSchedule() {
                   </TableRow>
                 ))
               )}
-=======
-              {payoutSchedule.map((payout) => (
-                <TableRow key={payout.memberId}>
-                  <TableCell className="font-medium">{payout.sequence}</TableCell>
-                  <TableCell>{payout.memberName}</TableCell>
-                  <TableCell className="text-right">
-                    {payout.payoutDate}
-                  </TableCell>
-                </TableRow>
-              ))}
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
             </TableBody>
           </Table>
         </div>

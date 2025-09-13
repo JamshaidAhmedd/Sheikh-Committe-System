@@ -28,11 +28,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-<<<<<<< HEAD
     --radius: 0.75rem;
-=======
-    --radius: 0.5rem;
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 84% 4%;
     --sidebar-primary: 217 91% 60%;
@@ -83,7 +79,6 @@
     @apply border-border;
   }
   body {
-<<<<<<< HEAD
     @apply bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 text-foreground;
     min-height: 100vh;
   }
@@ -140,8 +135,5 @@
   }
   50% {
     transform: translateY(-20px);
-=======
-    @apply bg-background text-foreground;
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
   }
 }
