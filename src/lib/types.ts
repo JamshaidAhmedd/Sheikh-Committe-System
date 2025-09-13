@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 export type PaymentStatus = 'paid' | 'unpaid';
 
 export type DailyStatus = {
@@ -8,13 +7,6 @@ export type DailyStatus = {
   status: PaymentStatus;
   createdAt?: string;
   updatedAt?: string;
-=======
-export type PaymentStatus = 'paid' | 'unpaid' | 'pending';
-
-export type DailyStatus = {
-  date: string; // "YYYY-MM-DD"
-  status: PaymentStatus;
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 };
 
 export type Member = {
@@ -22,13 +14,9 @@ export type Member = {
   name: string;
   email: string;
   joinDate: string; // "YYYY-MM-DD"
-<<<<<<< HEAD
   payoutTurn: number;
   payoutDate: string; // "YYYY-MM-DD"
   createdAt?: string;
   updatedAt?: string;
   dailyStatuses?: DailyStatus[];
-=======
-  dailyStatuses: DailyStatus[];
->>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 };
