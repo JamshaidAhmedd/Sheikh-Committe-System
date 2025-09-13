@@ -1,7 +1,11 @@
 'use client';
 
 import * as React from 'react';
+<<<<<<< HEAD
 import { DataService } from '@/lib/data';
+=======
+import { members as allMembers, setMembers } from '@/lib/data';
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 import type { Member } from '@/lib/types';
 import {
   format,
@@ -48,7 +52,10 @@ interface MemberTableProps {
 export function MemberTable({ isReadOnly = false }: MemberTableProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [members, setMembersState] = React.useState<Member[]>([]);
+<<<<<<< HEAD
   const [isLoading, setIsLoading] = React.useState(true);
+=======
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
   const { toast } = useToast();
 
   const defaultDateRange: DateRange = {
@@ -61,6 +68,7 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
   );
 
   React.useEffect(() => {
+<<<<<<< HEAD
     const loadMembers = async () => {
       try {
         setIsLoading(true);
@@ -80,6 +88,10 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
 
     loadMembers();
   }, [toast]);
+=======
+    setMembersState(allMembers);
+  }, []);
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 
   const dateRange = React.useMemo(() => {
     const from = date?.from;
@@ -109,7 +121,11 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     return schedule;
   }, [members]);
 
+<<<<<<< HEAD
   const handleStatusChange = async (
+=======
+  const handleStatusChange = (
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
     memberId: string,
     date: Date,
     checked: boolean
@@ -119,6 +135,7 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     const newStatus = checked ? 'paid' : 'unpaid';
     const dateString = format(date, 'yyyy-MM-dd');
 
+<<<<<<< HEAD
     try {
       await DataService.updateMemberPayment(memberId, dateString, newStatus);
       
@@ -136,6 +153,14 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
       if (m.id === memberId) {
         memberName = m.name;
         const updatedDailyStatuses = [...(m.dailyStatuses || [])];
+=======
+    let memberName = '';
+
+    const newMembers = members.map((m) => {
+      if (m.id === memberId) {
+        memberName = m.name;
+        const updatedDailyStatuses = [...m.dailyStatuses];
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
         const statusIndex = updatedDailyStatuses.findIndex(
           (ds) => ds.date === dateString
         );
@@ -146,11 +171,15 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
             status: newStatus,
           };
         } else {
+<<<<<<< HEAD
           updatedDailyStatuses.push({ 
             memberId,
             date: dateString, 
             status: newStatus 
           });
+=======
+          updatedDailyStatuses.push({ date: dateString, status: newStatus });
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
         }
 
         return { ...m, dailyStatuses: updatedDailyStatuses };
@@ -159,6 +188,10 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     });
 
     setMembersState(newMembers);
+<<<<<<< HEAD
+=======
+    setMembers(newMembers);
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
 
     toast({
       title: 'Status Updated',
@@ -177,7 +210,11 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     const headers = ['Name', ...dateRange.map((d) => format(d, 'yyyy-MM-dd'))];
     const rows = filteredMembers.map((member) => {
       const dailyStatuses = new Map(
+<<<<<<< HEAD
         (member.dailyStatuses || []).map((ds) => [ds.date, ds.status])
+=======
+        member.dailyStatuses.map((ds) => [ds.date, ds.status])
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
       );
       const row = [
         `"${member.name.replace(/"/g, '""')}"`,
@@ -264,7 +301,11 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
           </Button>
         )}
       </div>
+<<<<<<< HEAD
       <Card className="glassmorphism-card border-white/30 shadow-2xl">
+=======
+      <Card>
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table className="min-w-full">
@@ -313,6 +354,7 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
+<<<<<<< HEAD
                 {isLoading ? (
                   <TableRow>
                     <TableCell
@@ -326,6 +368,12 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
                   filteredMembers.map((member) => {
                     const dailyStatuses = new Map(
                       (member.dailyStatuses || []).map((ds) => [ds.date, ds.status])
+=======
+                {filteredMembers.length > 0 ? (
+                  filteredMembers.map((member) => {
+                    const dailyStatuses = new Map(
+                      member.dailyStatuses.map((ds) => [ds.date, ds.status])
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
                     );
                     return (
                       <TableRow key={member.id}>

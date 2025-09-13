@@ -30,11 +30,19 @@ export function OverviewChart({ data }: OverviewChartProps) {
     const monthLabel = format(d, 'MMM');
 
     const paid = data.filter(member => 
+<<<<<<< HEAD
         member.dailyStatuses?.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
     ).length;
 
     const unpaid = data.filter(member => 
         !member.dailyStatuses?.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
+=======
+        member.dailyStatuses.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
+    ).length;
+
+    const unpaid = data.filter(member => 
+        !member.dailyStatuses.some(p => format(new Date(p.date), monthFormat) === month && p.status === 'paid')
+>>>>>>> 128a08a90d489ae6002776951dc4a70eeae02f6c
     ).length;
     
     return { month: monthLabel, paid, unpaid };
