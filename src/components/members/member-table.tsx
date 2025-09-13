@@ -52,8 +52,8 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
   const { toast } = useToast();
 
   const defaultDateRange: DateRange = {
-    from: startOfMonth(new Date('2025-09-10')),
-    to: endOfMonth(new Date('2025-09-10')),
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
   };
 
   const [date, setDate] = React.useState<DateRange | undefined>(
@@ -351,6 +351,7 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
                                 }
                                 disabled={isReadOnly}
                                 aria-label={`Mark ${member.name} as paid for ${dateString}`}
+                                className="w-6 h-6 scale-125"
                               />
                             </TableCell>
                           );

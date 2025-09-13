@@ -13,10 +13,9 @@ export function StatsCards() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [dialogOpen, setDialogOpen] = React.useState<false | 'paid' | 'unpaid'>(false);
   
-  // Note: For a real app, you would use the current date.
-  // We are using a fixed date for demonstration purposes of this prototype.
-  const today = '2025-09-10';
-  const formattedDate = format(new Date(today), 'do MMMM, yyyy');
+  // Use current date for real-time status
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const formattedDate = format(new Date(), 'do MMMM, yyyy');
 
   React.useEffect(() => {
     const loadMembers = async () => {

@@ -43,7 +43,7 @@ export function DailyStatusCalendar({
 }: DailyStatusCalendarProps) {
   const { toast } = useToast();
   
-  const [month, setMonth] = React.useState<Date>(new Date('2025-09-10'));
+  const [month, setMonth] = React.useState<Date>(new Date());
 
   const statuses = React.useMemo(() => 
     member.dailyStatuses.reduce((acc, s) => {
@@ -112,7 +112,7 @@ export function DailyStatusCalendar({
       <Calendar
         month={month}
         onMonthChange={setMonth}
-        defaultMonth={new Date('2025-09-10')}
+        defaultMonth={new Date()}
         modifiers={statuses}
         modifiersClassNames={{
             paid: 'bg-green-100',
