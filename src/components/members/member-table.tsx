@@ -109,7 +109,7 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     return schedule;
   }, [members]);
 
-  const handleStatusChange = async (
+  const handleStatusChange = React.useCallback(async (
     memberId: string,
     date: Date,
     checked: boolean
@@ -119,47 +119,45 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     const newStatus = checked ? 'paid' : 'unpaid';
     const dateString = format(date, 'yyyy-MM-dd');
 
-    try {
-      await DataService.updateMemberPayment(memberId, dateString, newStatus);
-      
-      // Refresh data from database to ensure consistency
-      const refreshedMembers = await DataService.refreshMembers();
-      setMembersState(refreshedMembers);
-    } catch (error) {
-      console.error('Error updating payment status:', error);
-      // Continue with local update even if database update fails
-    }
+    // Update database in background (non-blocking)
+    DataService.updateMemberPayment(memberId, dateString, newStatus)
+      .catch(error => {
+        console.error('Error updating payment status:', error);
+        // Optionally show error toast or revert optimistic update
+      });
 
-    // Update local state
-    let memberName = '';
-    const newMembers = members.map((m) => {
-      if (m.id === memberId) {
-        memberName = m.name;
-        const updatedDailyStatuses = [...(m.dailyStatuses || [])];
-        const statusIndex = updatedDailyStatuses.findIndex(
-          (ds) => ds.date === dateString
-        );
+    // Update local state immediately (optimistic update)
+    setMembersState(prevMembers => 
+      prevMembers.map(member => {
+        if (member.id === memberId) {
+          const updatedDailyStatuses = [...(member.dailyStatuses || [])];
+          const statusIndex = updatedDailyStatuses.findIndex(
+            (ds) => ds.date === dateString
+          );
 
-        if (statusIndex > -1) {
-          updatedDailyStatuses[statusIndex] = {
-            ...updatedDailyStatuses[statusIndex],
-            status: newStatus,
-          };
-        } else {
-          updatedDailyStatuses.push({ 
-            memberId,
-            date: dateString, 
-            status: newStatus 
-          });
+          if (statusIndex > -1) {
+            updatedDailyStatuses[statusIndex] = {
+              ...updatedDailyStatuses[statusIndex],
+              status: newStatus,
+            };
+          } else {
+            updatedDailyStatuses.push({ 
+              memberId,
+              date: dateString, 
+              status: newStatus 
+            });
+          }
+
+          return { ...member, dailyStatuses: updatedDailyStatuses };
         }
+        return member;
+      })
+    );
 
-        return { ...m, dailyStatuses: updatedDailyStatuses };
-      }
-      return m;
-    });
-
-    setMembersState(newMembers);
-
+    // Find member name for toast notification
+    const member = members.find(m => m.id === memberId);
+    const memberName = member?.name || 'Member';
+    
     toast({
       title: 'Status Updated',
       description: `${memberName}'s status for ${format(
@@ -167,10 +165,12 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
         'do MMMM yyyy'
       )} set to ${newStatus}.`,
     });
-  };
+  }, [isReadOnly, members]);
 
-  const filteredMembers = members.filter((member) =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMembers = React.useMemo(() => 
+    members.filter((member) =>
+      member.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [members, searchTerm]
   );
 
   const handleExport = () => {
