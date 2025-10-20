@@ -114,58 +114,93 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
     date: Date,
     checked: boolean
   ) => {
-    if (isReadOnly) return;
+    if (isReadOnly) {
+      console.log('⚠️ Checkbox is read-only, ignoring change');
+      return;
+    }
 
     const newStatus = checked ? 'paid' : 'unpaid';
     const dateString = format(date, 'yyyy-MM-dd');
-
-    // Update database in background (non-blocking)
-    DataService.updateMemberPayment(memberId, dateString, newStatus)
-      .catch(error => {
-        console.error('Error updating payment status:', error);
-        // Optionally show error toast or revert optimistic update
-      });
-
-    // Update local state immediately (optimistic update)
-    setMembersState(prevMembers => 
-      prevMembers.map(member => {
-        if (member.id === memberId) {
-          const updatedDailyStatuses = [...(member.dailyStatuses || [])];
-          const statusIndex = updatedDailyStatuses.findIndex(
-            (ds) => ds.date === dateString
-          );
-
-          if (statusIndex > -1) {
-            updatedDailyStatuses[statusIndex] = {
-              ...updatedDailyStatuses[statusIndex],
-              status: newStatus,
-            };
-          } else {
-            updatedDailyStatuses.push({ 
-              memberId,
-              date: dateString, 
-              status: newStatus 
-            });
-          }
-
-          return { ...member, dailyStatuses: updatedDailyStatuses };
-        }
-        return member;
-      })
-    );
-
-    // Find member name for toast notification
     const member = members.find(m => m.id === memberId);
     const memberName = member?.name || 'Member';
-    
-    toast({
-      title: 'Status Updated',
-      description: `${memberName}'s status for ${format(
-        date,
-        'do MMMM yyyy'
-      )} set to ${newStatus}.`,
-    });
-  }, [isReadOnly, members]);
+
+    console.log('🔵 Checkbox clicked:', { memberId, memberName, date: dateString, newStatus });
+
+    // Store previous state for rollback
+    const previousMembers = members;
+
+    try {
+      // Update local state immediately (optimistic update)
+      setMembersState(prevMembers => 
+        prevMembers.map(member => {
+          if (member.id === memberId) {
+            const updatedDailyStatuses = [...(member.dailyStatuses || [])];
+            const statusIndex = updatedDailyStatuses.findIndex(
+              (ds) => ds.date === dateString
+            );
+
+            if (statusIndex > -1) {
+              updatedDailyStatuses[statusIndex] = {
+                ...updatedDailyStatuses[statusIndex],
+                status: newStatus,
+              };
+            } else {
+              updatedDailyStatuses.push({ 
+                memberId,
+                date: dateString, 
+                status: newStatus 
+              });
+            }
+
+            return { ...member, dailyStatuses: updatedDailyStatuses };
+          }
+          return member;
+        })
+      );
+
+      console.log('🔵 Local state updated optimistically');
+
+      // Update database and await the result
+      console.log('🔵 Calling DataService.updateMemberPayment...');
+      await DataService.updateMemberPayment(memberId, dateString, newStatus);
+      
+      console.log('✅ Database update successful');
+      
+      // Debug: Check the updated member data
+      const updatedMember = members.find(m => m.id === memberId);
+      if (updatedMember) {
+        const updatedStatus = updatedMember.dailyStatuses?.find(ds => ds.date === dateString);
+        console.log('🔍 After update - member data:', {
+          memberId,
+          dateString,
+          updatedStatus,
+          allDailyStatuses: updatedMember.dailyStatuses
+        });
+      }
+      
+      // Show success toast only after database confirms
+      toast({
+        title: 'Status Updated',
+        description: `${memberName}'s status for ${format(
+          date,
+          'do MMMM yyyy'
+        )} set to ${newStatus}.`,
+      });
+      
+    } catch (error) {
+      console.error('❌ Error updating payment status:', error);
+      
+      // Rollback optimistic update
+      setMembersState(previousMembers);
+      
+      // Show error toast
+      toast({
+        title: 'Update Failed',
+        description: `Failed to update ${memberName}'s status. Please try again.`,
+        variant: 'destructive',
+      });
+    }
+  }, [isReadOnly, members, toast]);
 
   const filteredMembers = React.useMemo(() => 
     members.filter((member) =>
@@ -336,6 +371,18 @@ export function MemberTable({ isReadOnly = false }: MemberTableProps) {
                           const dateString = format(date, 'yyyy-MM-dd');
                           const status = dailyStatuses.get(dateString);
                           const payoutMember = payoutSchedule.get(dateString);
+
+                          // Debug logging for the specific date we're testing
+                          if (member.id === '4' && dateString === '2025-09-17') {
+                            console.log('🔍 Debug checkbox state:', {
+                              memberId: member.id,
+                              memberName: member.name,
+                              dateString,
+                              status,
+                              checked: status === 'paid',
+                              dailyStatuses: member.dailyStatuses
+                            });
+                          }
 
                           return (
                             <TableCell

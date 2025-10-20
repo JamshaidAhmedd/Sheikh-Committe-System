@@ -354,12 +354,20 @@ export class DataService {
   }
 
   static async updateMemberPayment(memberId: string, date: string, status: PaymentStatus): Promise<void> {
+    console.log('🔵 DataService.updateMemberPayment called:', { memberId, date, status });
+    
     if (!isSupabaseConfigured()) {
-      throw new Error('Supabase is not configured. Cannot update payment status.');
+      const error = new Error('Supabase is not configured. Cannot update payment status.');
+      console.error('❌ Supabase not configured!');
+      throw error;
     }
 
+    console.log('🔵 Supabase is configured, proceeding with database update...');
+
     try {
+      console.log('🔵 Calling dbService.updateDailyStatus...');
       await dbService.updateDailyStatus(memberId, date, status);
+      console.log('🔵 dbService.updateDailyStatus completed');
       
       // Update local data (for immediate UI reflection, assuming DB update succeeds)
       const member = this.members.find(m => m.id === memberId);
@@ -371,16 +379,20 @@ export class DataService {
         const existingStatus = member.dailyStatuses.find(s => s.date === date);
         if (existingStatus) {
           existingStatus.status = status;
+          console.log('🔵 Updated existing status in local cache');
         } else {
           member.dailyStatuses.push({
             memberId,
             date,
             status,
           });
+          console.log('🔵 Added new status to local cache');
         }
       }
+      
+      console.log('✅ DataService.updateMemberPayment completed successfully');
     } catch (error: any) {
-      console.error('❌ Error updating payment status:', error.message || error);
+      console.error('❌ Error in DataService.updateMemberPayment:', error.message || error);
       throw error; // Don't fallback, throw the error
     }
   }
