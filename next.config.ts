@@ -4,8 +4,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Remove this, it's no longer supported in Next 16
-  // eslint: { ignoreDuringBuilds: true },
 
   images: {
     remotePatterns: [
@@ -30,10 +28,15 @@ const nextConfig: NextConfig = {
     ],
     localPatterns: [
       {
-        // Allow all local images, including query strings like ?v=1
-        pattern: '/**/*',
+        // Allow local images (including those with query strings)
+        pathname: '/**/*',
       },
     ],
+  },
+
+  experimental: {
+    // If you aren't using Turbopack by default, this is safe to remove.
+    turbo: true,
   },
 };
 
