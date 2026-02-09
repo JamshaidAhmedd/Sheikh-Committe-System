@@ -1,13 +1,12 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Remove this, it's no longer supported in Next 16
+  // eslint: { ignoreDuringBuilds: true },
+
   images: {
     remotePatterns: [
       {
@@ -27,6 +26,12 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
+      },
+    ],
+    localPatterns: [
+      {
+        // Allow all local images, including query strings like ?v=1
+        pattern: '/**/*',
       },
     ],
   },
